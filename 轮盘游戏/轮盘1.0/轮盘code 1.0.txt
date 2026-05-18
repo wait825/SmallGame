@@ -1,0 +1,104 @@
+#include <iostream>
+#include <random>
+
+#define MAGAZINE_SIZE 6
+int currentIndex = 0;
+//玩家
+class Player
+{
+public:
+    int health;
+    Player(int hp = 1) :health(hp) {};
+};
+//展示菜单
+void ShowMenu()
+{
+    std::cout << "轮盘游戏" << std::endl;
+    std::cout << "如果空弹打空将失去游戏资格" << std::endl;
+}
+//随机出子弹
+int getBullet()
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<> dis(0, 1);
+    return dis(gen);
+}
+//展示实空弹
+void Bullet(int magazine[])
+{
+    for (int i = 0; i < MAGAZINE_SIZE;i++)
+    {
+        magazine[i] = getBullet();
+    }
+    int Live = 0;
+    int Blank = 0;
+    for (int i = 0; i < MAGAZINE_SIZE; ++i)
+    {
+        if (magazine[i] == 1) Live++;
+        else Blank++;
+    }
+    std::cout << "实弹有" << Live << std::endl;
+    std::cout << "空弹有" << Blank << std::endl;
+}
+//射出子弹
+void  Shoot(int magazine[],int &currentIndex,Player &HP)
+{
+    int chioce = 0;
+    while (currentIndex < MAGAZINE_SIZE)
+    {
+        int bullet = magazine[currentIndex];
+        std::cout << "      1,自己"<<std::endl;
+        std::cout << "      2,打空" << std::endl;
+        std::cout << "      3,停止" << std::endl;
+        std::cin >> chioce;
+        if (chioce == 1)
+        {
+            if (bullet == 1) 
+            { 
+                std::cout << "砰！实弹" << std::endl;
+                HP.health--;
+                std::cout << "你死了" << std::endl;
+                return;
+            }
+            else { std::cout << "咔。空弹" << std::endl; }
+            currentIndex++;
+        }
+        else if (chioce == 2)
+        {
+            if (bullet == 1)
+            {
+                std::cout << "是实弹，你打空了,活了下来" << std::endl;
+                currentIndex++;
+            }
+            else
+            {
+                std::cout << "是空弹，不能打了" << std::endl;
+                return;
+            }
+        }
+        else if (chioce >= 4)
+        {
+            std::cout << "请输入有效选择" << std::endl;
+        }
+        else
+        {
+            std::cout <<"结束"<< std::endl;
+            return;
+        }
+    }
+    std::cout << "打完了" << std::endl;
+}
+
+int main()
+{
+    Player p;
+    int magazine[MAGAZINE_SIZE];
+    ShowMenu();
+    Bullet(magazine);
+    //ShowBullet(magazine);
+    Shoot(magazine, currentIndex,p);
+
+    system("pause");
+    return 0;
+}
