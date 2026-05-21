@@ -1,0 +1,172 @@
+#include <iostream>
+#include <random>
+
+#define MAGAZINE_SIZE 6
+
+//玩家
+class Player
+{
+public:
+    int health;
+    Player(int hp = 1) :health(hp) {};
+};
+
+//电脑
+class PlayerPC
+{
+public:
+    int health;
+    PlayerPC(int hpp = 1) :health(hpp) {};
+};
+
+//展示菜单
+void ShowMenu()
+{
+    std::cout << "轮盘游戏" << std::endl;
+    std::cout << "1.单人模式" << std::endl;
+    std::cout << "2.人机模式" << std::endl;
+    std::cout << "如果空弹打空将失去游戏资格" << std::endl;
+}
+
+//随机出子弹
+int getBullet()
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<> dis(0, 1);
+    return dis(gen);
+}
+
+//展示实空弹
+void Bullet(int magazine[])
+{
+    
+    for (int i = 0; i < MAGAZINE_SIZE; i++)
+    {
+        magazine[i] = getBullet();
+    }
+    //for (int i = 0; i < MAGAZINE_SIZE; i++)
+    //{
+    //    std::cout << magazine[i] << " ";
+    //}
+    std::cout << "\n";
+    int Live = 0;
+    int Blank = 0;
+    for (int i = 0; i < MAGAZINE_SIZE; ++i)
+    {
+        if (magazine[i] == 1) Live++;
+        else Blank++;
+    }
+    std::cout << "实弹有" << Live << std::endl;
+    std::cout << "空弹有" << Blank << std::endl;
+ 
+}
+
+//射出子弹
+void  Shoot(int magazine[], int& currentIndex, Player& HP)
+{
+    int chioce = 0;
+    while (currentIndex < MAGAZINE_SIZE)
+    {
+        int bullet = magazine[currentIndex];
+        std::cout << "      1,自己" << std::endl;
+        std::cout << "      2,打空" << std::endl;
+        std::cout << "      3,停止" << std::endl;
+        std::cin >> chioce;
+        if (!std::cin >> chioce)
+        {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "请输入有效选择" << std::endl;
+            continue;
+        }
+        else if (chioce == 1)
+        {
+            std::cin.ignore(10000, '\n');
+            if (bullet == 1)
+            {
+                std::cout << "砰！实弹" << std::endl;
+                HP.health--;
+                std::cout << "你死了" << std::endl;
+                return;
+            }
+            else { std::cout << "咔。空弹" << std::endl; }
+            currentIndex++;
+        }
+        else if (chioce == 2)
+        {
+            std::cin.ignore(10000, '\n');
+            if (bullet == 1)
+            {
+                std::cout << "是实弹，你打空了,活了下来" << std::endl;
+                currentIndex++;
+            }
+            else
+            {
+                std::cout << "是空弹，不能打了" << std::endl;
+                return;
+            }
+        }
+        else if (chioce == 3)
+        {
+            std::cin.ignore(10000, '\n');
+            return;
+        }
+        else
+        {
+            std::cin.ignore(10000, '\n');
+            std::cout << "请输入有效选择" << std::endl;
+            continue;
+        }
+    }
+    std::cout << "打完了，你活了下来" << std::endl;
+}
+void singlegame()
+{
+    int magazine[MAGAZINE_SIZE];
+    bool run = true;
+    while (run == true)
+    {
+        Player p;
+        int currentIndex = 0;
+        char chioce;
+        Bullet(magazine);
+        Shoot(magazine, currentIndex, p);
+        std::cout << "再来一局？(y/n)" << std::endl;
+        std::cout << "请输入有效选择，默认退出" << std::endl;
+
+        std::cin >> chioce;
+        if (chioce == 'y' || chioce == 'Y')
+        {
+            run = true;
+
+        }
+        else if (chioce == 'x' || chioce == 'X')
+        {
+            run = false;
+        }
+        else
+        {
+            std::cout << "请输入有效选择 " << std::endl;
+            run = false;
+        }
+        system("cls");
+    }
+}
+int main()
+{
+    ShowMenu(); 
+    int chioce = 0;
+    std::cin >> chioce;
+    switch (chioce)
+    {
+    case 1:
+        singlegame();
+        break;
+    case 2:
+        break;
+        
+    }
+   
+    return 0;
+}
